@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<title>Programming PAC-MAN</title>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+<script src="utils.js"></script>
+<script src="board.js"></script>
+<script src="rule.js"></script>
+<script src="ruleMaker.js"></script>
+
+<script src="tingle/tingle.js"></script>
+
+<link rel="stylesheet" type="text/css" href="styles.css">
+<link rel="stylesheet" type="text/css" href="tingle/tingle.css">
+
+</head>
+<body>
+<div id="wrapper">
+<div id="board"></div>
+
+<div id="controls">
+
+    <div class="slidecontainer">
+        <input type="range" min="10" max="5000" value="1000" class="slider" id="speed">
+        <div class="small" id="speedVal">1 sec per move</div>
+    </div>
+    <p>
+    <input type="radio" name="cellClick" value="increment" checked="true">Add to value on click</br>
+    <input type="radio" name="cellClick" value="decrement">Subtract from value on click</br>
+    <input type="radio" name="cellClick" value="movePacman">Move Pacman on click
+    <p>
+
+    </p>
+    <div class="newRule">
+        ADD A RULE:<p>
+        If number is
+        <select name="decider" id="decider">
+            <option value="less">less than</option>
+            <option value="equal">equal to</option>
+            <option value="greater">greater than</option>
+        </select> <input type="number" class="number" id="deciderNum" value=2> then
+        <select id="transformation">
+            <option value="nothing">do nothing</option>
+            <option value="increment">add one</option>
+            <option value="decrement">subtract one</option>
+            <option value="set">set to 0</option>
+        </select> and 
+        <select id="action">
+            <option value="forward">go forward</option>
+            <option value="right">turn right</option>
+            <option value="left">turn left</option>
+            <option value="backward">turn backwards</option>
+        </select>
+        <p>
+        <button id="newRule" style="margin-left:60%">ADD RULE</button>
+    </div>
+
+    <div class="rules">
+    </div>
+
+    <button id="play" class="play">PLAY</button>
+</div>
+
+</div>
+<script>
+    const height = 20;
+    const width = 20;
+    const board = new Board(height, width);
+    board.setup();
+
+    let playing = false; // Used as a flag to stop play at any time
+    
+
+    const mover = new Mover(width, height, 'RIGHT');
+    let state = {coords: [2, 1], direction: 'RIGHT'};
+    let rules = [];
+    let latestRuleId = 0;
+    mover.movePacman(state);
+
+    $('#speed').change(function() {
+        const second = parseInt($(this).val()) / 1000;
+        $('#speedVal').html(`${second} sec per move`);
+    });
+
+    $('#board').on('click', '.cell', function(handler) {
+        const selection = $("input[name='cellClick']:checked").val();
+        if(selection === "increment") {
+            setValue($(this), getValue($(this)) + 1);
+        }
+
+        if(selection === "decrement") {
+            setValue($(this), getValue($(this)) - 1);
+        }
+
+        if(selection === "movePacman") {
+            if($(this).hasClass('pacman')) {
+                debugger;
+                mover.rotatePacman(state);
+                return;
+            }
+            state.coords = getCoords($(this));
+            mover.movePacman(state);
+        }
+    });
+
+    $('#newRule').click(function(handler) {
+        const [rule, ruleText] = makeRule(latestRuleId);
+        rules.push(rule);
+        const deleteRule = '<button class="delete">X</button>';
+        $('.rules').append(`<div class="rule" name="${latestRuleId}">${ruleText}${deleteRule}</div>`);
+        latestRuleId++;
+    });
+
+    $('#controls').on('click', 'button.delete', function(handler) {
+        const removalId = parseInt($(this).parent().attr('name'));
+        rules = rules.filter((rule) => rule.id != removalId);
+        $(this).parent().remove();
+    });
+    
+    $('#play').click(() => {
+        debugger;
+        togglePlay();
+    });
+
+    async function play() {        
+        let executed;
+        let previousState;
+
+        if(!rules.length) {
+            togglePlay();
+            makeModal();
+            return;
+        }
+        // 1000 seems like a biggish number ¯\_(ツ)_/¯
+        for(let i = 0; i < 1000; i++) {
+            if(!playing) {
+                break;
+            }
+            previousState = JSON.stringify(state);
+            // Tries every rule until one is executed
+            rules.every((rule) => {
+                [state, executed] = rule.execute(state);
+                return !executed;
+            });
+            // If the previous state is the same it will not move
+            // with the same set of rules. End the game
+            if(previousState === JSON.stringify(state)) {
+                debugger;
+                togglePlay();
+                if(i == 0) {
+                    stuckModal();
+                }
+                break;
+            }
+            await sleep($('#speed').val());
+        }   
+    }
+
+</script>
+    
+</body>
+
+</html>
