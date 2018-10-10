@@ -1,2 +1,3 @@
-# pacman
-Teaching CS concepts
+# PAC-MAN
+
+This is just a little proof of concept thing I'm working on...
