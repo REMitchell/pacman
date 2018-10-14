@@ -78,6 +78,9 @@
 </div>
 
 </div>
+<button id="halfandhalf">Half and half</button>
+<button id="roundabout">Roundabout</button>
+<button id="allSquares">All squares</button>
 <script>
     const height = 20;
     const width = 20;
@@ -151,13 +154,19 @@
         togglePlay();
     });
 
-    $('#scores .traversed').click(() => {
+    $('#allSquares').click(() => {
         board.setLayout(board.allSquares());
     });
 
-    $('#scores .count').click(() => {
+    $('#roundabout').click(() => {
         board.setLayout(board.roundabout());
     });
+
+    $('#halfandhalf').click(() => {
+        board.setLayout(board.halfandhalf());
+    });
+
+
 
     async function play() {        
         let executed;

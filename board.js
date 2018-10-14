@@ -90,6 +90,23 @@ class Board {
 
     }
 
+    halfandhalf() {
+        const layout = this.emptyLayout();
+        for(let x = 0; x < this.width; x++) {
+            for(let y = 0; y < this.height; y++) {
+                if(x > y) {
+                    layout[3].push([x, y]);
+                } else if(y > x) {
+                    layout[2].push([x, y])
+                } else if(x === y) {
+                    layout[4].push([x, y])
+                }
+            }
+        }
+        debugger;
+        return layout;
+    }
+
     getLayout() {
         const layout = this.emptyLayout();
         $('#board .row .cell').each((i, cell) => {
