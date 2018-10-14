@@ -15,29 +15,36 @@ class MoveRule {
     }
 }
 
-class Transform {
+class Transformer {
+    constructor(board) {
+        this.board = board;
+    }
 
-    static doNothing() {
+    doNothing() {
         return (coords) => {
             return;
         }
     }
 
-    static make(val) {
+    make(val) {
         return (coords) => {
-            setValue(element(coords), val);
+            const score = Math.abs(getValue(element(coords)) - val);
+            this.board.updateCountScore(score);
+            this.board.setValue(element(coords), val);
         }
     }
 
-    static increment() {
+    add(val) {
         return (coords) => {
-            setValue(element(coords), getValue(element(coords)) + 1);
+            this.board.updateCountScore(val);
+            this.board.setValue(element(coords), getValue(element(coords)) + val);
         }
     }
 
-    static decrement() {
+    subtract(val) {
         return (coords) => {
-            setValue(element(coords), getValue(element(coords)) - 1);
+            this.board.updateCountScore(val);
+            this.board.setValue(element(coords), getValue(element(coords)) - val);
         }
     }
 
@@ -65,10 +72,8 @@ class Decider {
 }
 
 class Mover {
-    constructor(height, width) {
-        this.height = height;
-        this.width = width;
-        this.directions = ['LEFT', 'RIGHT', 'UP', 'DOWN']
+    constructor(board) {
+        this.board = board;
     }
 
     goForward(state) {
@@ -141,6 +146,8 @@ class Mover {
     movePacman(state) {
         $('.pacman').removeClass('pacman pacman-UP pacman-DOWN pacman-LEFT pacman-RIGHT');
         element(state.coords).addClass('pacman').addClass(`pacman-${state.direction}`);
+        // Update the score
+        board.updateTraverseScore();
     }
 
     isWall(coords) {
@@ -158,7 +165,7 @@ class Mover {
 
     moveAbsDown(state) {
         state.direction = 'DOWN';
-        if(state.coords[1] < height - 1 && !this.isWall([state.coords[0], state.coords[1] + 1])) {
+        if(state.coords[1] < this.board.height - 1 && !this.isWall([state.coords[0], state.coords[1] + 1])) {
             state.coords[1] += 1;
         }
         this.movePacman(state);
@@ -167,7 +174,7 @@ class Mover {
 
     moveAbsRight(state) {
         state.direction = 'RIGHT';
-        if(state.coords[0] < width - 1 && !this.isWall([state.coords[0] + 1, state.coords[1]])) {
+        if(state.coords[0] < this.board.width - 1 && !this.isWall([state.coords[0] + 1, state.coords[1]])) {
             state.coords[0] += 1;
         }
         this.movePacman(state);

@@ -2,21 +2,6 @@ function element(coord) {
     return $(`#board .row.${coord[1]} .cell.${coord[0]}`);
 }
 
-function setValue(element, val) {
-    val = val > 8 ? 9 : val;
-    val = val < -1 ? -1 : val;
-
-    element.removeClass("wall val0 val1 val2 val3 val4 val5 val6 val7 val8 val9")
-    if(val === -1) {
-        element.addClass(`wall`);
-    } else {
-        element.addClass(`val${val}`);
-    }
-
-    element.attr('data-val', val);
-    element.html(val);
-}
-
 function getValue(element) {
     return parseInt(element.attr('data-val'));
 }
@@ -45,7 +30,7 @@ function togglePlay() {
         play();
     } else {
         // Shut it all down!
-        playing = stop;
+        playing = false;
         $('#play')
             .removeClass('stop')
             .addClass('play')
@@ -53,20 +38,8 @@ function togglePlay() {
     }
 }
 
-function setPlay() {
-    playing = false;
-    $('#stop').
-    $('#play').html('PLAY');
-}
-
-function setStop() {
-    playing = true;
-    $('#play').html('STOP');
-}
-
 // Yeah, this is gross right now. Still playing around with it
 function makeModal() {
-
     const modal = new tingle.modal({
         footer: false,
         closeMethods: ['overlay', 'button', 'escape'],

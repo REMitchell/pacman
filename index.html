@@ -12,7 +12,9 @@
 
 <script src="tingle/tingle.js"></script>
 
+<link rel="stylesheet" type="text/css" id="modeStyle" href="modeStyles/numbers.css">
 <link rel="stylesheet" type="text/css" href="styles.css">
+
 <link rel="stylesheet" type="text/css" href="tingle/tingle.css">
 
 </head>
@@ -21,32 +23,44 @@
 <div id="board"></div>
 
 <div id="controls">
-
+    <table id="scores">
+        <tr><th>Cells Traversed</th><th>Count</th></tr>
+        <tr><td class="traversed">-1</td><td class="count">0</td></tr>
+    </table>
+    <p>
+    <span class="label">MODE:</span><br>
+    <input type="radio" name="gameMode" value="dots" checked="true">Dots<br>
+    <input type="radio" name="gameMode" value="numbers">Numbers<br>
+    <p>
+    <span class="label">SPEED:</span><br>
     <div class="slidecontainer">
         <input type="range" min="10" max="5000" value="1000" class="slider" id="speed">
         <div class="small" id="speedVal">1 sec per move</div>
     </div>
     <p>
-    <input type="radio" name="cellClick" value="increment" checked="true">Add to value on click</br>
-    <input type="radio" name="cellClick" value="decrement">Subtract from value on click</br>
+    <span class="label">MODIFY BOARD:</span><br>
+    <input type="radio" name="cellClick" value="increment" checked="true">Add to value on click<br>
+    <input type="radio" name="cellClick" value="decrement">Subtract from value on click<br>
     <input type="radio" name="cellClick" value="movePacman">Move Pacman on click
     <p>
 
     </p>
     <div class="newRule">
-        ADD A RULE:<p>
+        <span class="label">ADD A RULE:</span><p>
         If number is
         <select name="decider" id="decider">
             <option value="less">less than</option>
             <option value="equal">equal to</option>
             <option value="greater">greater than</option>
-        </select> <input type="number" class="number" id="deciderNum" value=2> then
+        </select> <input type="number" class="number" id="deciderNum" value=2> 
+        <br>then
         <select id="transformation">
             <option value="nothing">do nothing</option>
-            <option value="increment">add one</option>
-            <option value="decrement">subtract one</option>
-            <option value="set">set to 0</option>
-        </select> and 
+            <option value="increment">add</option>
+            <option value="decrement">subtract</option>
+            <option value="set">set to</option>
+        </select>&nbsp;<input type="number" class="number" id="transformerNum" value=2 style="display:none;">
+        <br>and 
         <select id="action">
             <option value="forward">go forward</option>
             <option value="right">turn right</option>
@@ -67,17 +81,32 @@
 <script>
     const height = 20;
     const width = 20;
-    const board = new Board(height, width);
+    const board = new Board(height, width, 'dots');
     board.setup();
-
+    
     let playing = false; // Used as a flag to stop play at any time
     
 
-    const mover = new Mover(width, height, 'RIGHT');
+    const mover = new Mover(board);
+    const transformer = new Transformer(board);
+
     let state = {coords: [2, 1], direction: 'RIGHT'};
     let rules = [];
     let latestRuleId = 0;
     mover.movePacman(state);
+    $('select#transformation').change(function() {
+        if($('select#transformation').val() === 'nothing') {
+            $('#transformerNum').css('display', 'none');
+        } else {
+            $('#transformerNum').css('display', '');
+        }
+    });
+
+    $("input[name='gameMode']").change(function() {
+        board.mode = $("input[name='gameMode']:checked").val();
+        board.setLayout(board.getLayout());
+        console.log(`CHANGED BOARD MODE TO ${board.mode}`);
+    });
 
     $('#speed').change(function() {
         const second = parseInt($(this).val()) / 1000;
@@ -87,16 +116,15 @@
     $('#board').on('click', '.cell', function(handler) {
         const selection = $("input[name='cellClick']:checked").val();
         if(selection === "increment") {
-            setValue($(this), getValue($(this)) + 1);
+            board.setValue($(this), getValue($(this)) + 1);
         }
 
         if(selection === "decrement") {
-            setValue($(this), getValue($(this)) - 1);
+            board.setValue($(this), getValue($(this)) - 1);
         }
 
         if(selection === "movePacman") {
             if($(this).hasClass('pacman')) {
-                debugger;
                 mover.rotatePacman(state);
                 return;
             }
@@ -120,8 +148,15 @@
     });
     
     $('#play').click(() => {
-        debugger;
         togglePlay();
+    });
+
+    $('#scores .traversed').click(() => {
+        board.setLayout(board.allSquares());
+    });
+
+    $('#scores .count').click(() => {
+        board.setLayout(board.roundabout());
     });
 
     async function play() {        
@@ -147,7 +182,6 @@
             // If the previous state is the same it will not move
             // with the same set of rules. End the game
             if(previousState === JSON.stringify(state)) {
-                debugger;
                 togglePlay();
                 if(i == 0) {
                     stuckModal();

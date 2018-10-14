@@ -1,43 +1,43 @@
 function makeRule(ruleId) {
 
     let decider;
-    let transformer;
     let action;
     let ruleText = 'If number is';
     // If number is less than 2 then do nothing and go forward
     switch($('#decider').val()) {
         case 'less':
-            decider = Decider.ifValLessThan($(deciderNum).val());
+            decider = Decider.ifValLessThan($('#deciderNum').val());
             ruleText += ' less than';
             break;
         case 'equal':
-            decider = Decider.ifValIs($(deciderNum).val());
+            decider = Decider.ifValIs($('#deciderNum').val());
             ruleText += ' equal to';
             break;
         case 'greater':
-            decider = Decider.ifValGreaterThan($(deciderNum).val());
+            decider = Decider.ifValGreaterThan($('#deciderNum').val());
             ruleText += ' greater than';
             break;
     }
 
-    ruleText += ` ${$(deciderNum).val()}`
+    ruleText += ` ${$('#deciderNum').val()}`
 
+    let transformNum = $('#transformerNum').val();
     switch($('#transformation').val()) {
         case 'nothing':
-            transformer = Transform.doNothing();
+            transform = transformer.doNothing();
             ruleText += ' then do nothing'
             break;
         case 'increment':
-            transformer = Transform.increment();
-            ruleText += ' then add 1';
+            transform = transformer.add(transformNum);
+            ruleText += ` then add ${transformNum}`;
             break;
         case 'decrement':
-            transformer = Transform.decrement();
-            ruleText += ' then subtract 1';
+            transform = transformer.subtract(transformNum);
+            ruleText += ` then subtract ${transformNum}`;
             break;
         case 'set':
-            transformer = Transform.make(0);
-            ruleText += ' then set to 0';
+            transform = transformer.make(transformNum);
+            ruleText += ` then make ${transformNum}`;
             break;
     }
 
@@ -60,5 +60,5 @@ function makeRule(ruleId) {
             break;
     }
 
-    return [new MoveRule(ruleId, decider, transformer, action), ruleText];
+    return [new MoveRule(ruleId, decider, transform, action), ruleText];
 }
