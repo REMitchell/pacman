@@ -4,7 +4,8 @@ Teaching computer science through 80's arcade games!
 
 ## Important Installation Instructions
 
-Open up index.html, preferably in some appropriate rendering software, such as a web browser like this one!
+Clone/download and open up index.html locally in your browser.
+Or, navigate to <a href="http://haltornot.com">the internet page where this project lives!</a>
 
 ## How it Works
 
@@ -50,4 +51,9 @@ Setup of the grid (and the storage/application of different grid/value setups) i
 I've tried to write this such that the board height and width is easily configurable. For looking at large scale patterns of your PAC-MAN's movement, viewing dozens (or even... hundreds?) of cells across may be useful!
 
 ### Playing around!
-I've been focusing on writing this for so long, I haven't really gotten a chance to use it! 
+I've been focusing on writing this for so long, I haven't really gotten a chance to use it! This game is essentially a <a href="https://en.wikipedia.org/wiki/Turing_machine">Turing Machine</a> with a single state, and raises (I think) some interesting computer science questions and methods of thinking.
+- Are we defining sets of rules to work with a given board, or are we designing boards to work with a set of rules? How do the two variables (the board, and the rule set) interact with each other?
+- PAC-MAN is always guaranteed to either get "stuck" or go into an infinite loop. Why is this the case? Could you design a system (maybe some imaginary system) in which this would not be the case?
+- What if the possible values in the cells were unbounded, instead of being limited to 1-9? Could you use this to trigger different "states" for your ruleset? Does this mean that it's equivalent to a Turing Machine?
+- What defines the set of boards where PAC-MAN is capable of crossing all the cells and ones where some cells are unreachable? How can you tell? What kinds of constraints do the rule formats and cell values place on us?
+
