@@ -12,10 +12,6 @@ function getCoords(element) {
 }
 
 function sleep(ms) {
-    if(!ms) {
-        console.log("MS IS UNDEFINED");
-        ms = 1000;
-    }
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
@@ -38,38 +34,75 @@ function togglePlay() {
     }
 }
 
-// Yeah, this is gross right now. Still playing around with it
-function makeModal() {
-    const modal = new tingle.modal({
-        footer: false,
-        closeMethods: ['overlay', 'button', 'escape'],
-        closeLabel: "Close",
-        cssClass: ['custom-class-1', 'custom-class-2'],
-    });
-    
-    const makeRules = "<h1>You Make the Rules!</h1> \
-    But you do have to make them. Add a new rule that tells PAC-MAN where to go\
-    using the control panel to the right"
-    modal.setContent(makeRules);
+function makeRule(ruleId) {
+    let decide;
+    let action;
+    // If number is less than 2 then do nothing and go forward
+    switch($('#decider').val()) {
+        case 'less':
+            decide = decider.ifValLessThan($('#deciderNum').val());
+            break;
+        case 'equal':
+            decide = decider.ifValIs($('#deciderNum').val());
+            break;
+        case 'greater':
+            decide = decider.ifValGreaterThan($('#deciderNum').val());
+            break;
+    }
 
-    
-    modal.open();
+    let transformNum = $('#transformerNum').val();
+    switch($('#transformation').val()) {
+        case 'nothing':
+            transform = transformer.doNothing();
+            break;
+        case 'increment':
+            transform = transformer.add(transformNum);
+            break;
+        case 'decrement':
+            transform = transformer.subtract(transformNum);
+            break;
+        case 'set':
+            transform = transformer.make(transformNum);
+            break;
+    }
+
+    switch($('#action').val()) {
+        case 'forward':
+            action = mover.goForward();
+            break;
+        case 'right':
+            action = mover.goRight();
+            break;
+        case 'left':
+            action = mover.goLeft();
+            break;
+        case 'backward':
+            action = mover.goBack();
+            break;
+    }
+
+    return new MoveRule(ruleId, board, decide, transform, action);
 }
 
-function stuckModal() {
-
-    const modal = new tingle.modal({
-        footer: false,
-        closeMethods: ['overlay', 'button', 'escape'],
-        closeLabel: "Close",
-        cssClass: ['custom-class-1', 'custom-class-2'],
-    });
-    const stuck = "<h1>Your PAC-MAN is stuck!</h1> \
+const modalText = {
+    makeRules: "<h1>You Make the Rules!</h1> \
+    But you do have to make them. Add a new rule that tells PAC-MAN where to go\
+    using the control panel to the right",
+    stuck: "<h1>Your PAC-MAN is stuck!</h1> \
     The definition of insanity is doing the same thing over and over again and expecting \
     different results. <br>Your PAC-MAN is stuck in the same state, with the same rules, \
     and can't move, no matter how many times you press that button!\
-    <br>Why not change things up a little? You can move your PAC-MAN using the control panel to the right";
-    modal.setContent(stuck);
+    <br>Why not change things up a little? You can move your PAC-MAN using the control panel to the right",
+}
+
+function makeModal(text) {
+    const modal = new tingle.modal({
+        footer: false,
+        closeMethods: ['overlay', 'button', 'escape'],
+        closeLabel: "Close",
+        cssClass: ['custom-class-1', 'custom-class-2'],
+    });
+    modal.setContent(text);
     modal.open();
 }
 

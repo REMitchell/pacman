@@ -8,7 +8,6 @@
 <script src="utils.js"></script>
 <script src="board.js"></script>
 <script src="rule.js"></script>
-<script src="ruleMaker.js"></script>
 
 <script src="tingle/tingle.js"></script>
 
@@ -84,19 +83,20 @@
 <script>
     const height = 20;
     const width = 20;
-    const board = new Board(height, width, 'dots');
+    let state = {coords: [2, 1], direction: 'RIGHT'};
+    const board = new Board(height, width, 'dots', state);
     board.setup();
     
     let playing = false; // Used as a flag to stop play at any time
     
-
-    const mover = new Mover(board);
+    const decider = new Decider(board);
     const transformer = new Transformer(board);
+    const mover = new Mover(board);
 
-    let state = {coords: [2, 1], direction: 'RIGHT'};
     let rules = [];
     let latestRuleId = 0;
     mover.movePacman(state);
+
     $('select#transformation').change(function() {
         if($('select#transformation').val() === 'nothing') {
             $('#transformerNum').css('display', 'none');
@@ -137,10 +137,10 @@
     });
 
     $('#newRule').click(function(handler) {
-        const [rule, ruleText] = makeRule(latestRuleId);
+        const rule = makeRule(latestRuleId);
         rules.push(rule);
         const deleteRule = '<button class="delete">X</button>';
-        $('.rules').append(`<div class="rule" name="${latestRuleId}">${ruleText}${deleteRule}</div>`);
+        $('.rules').append(`<div class="rule" name="${latestRuleId}">${rule.toString()}${deleteRule}</div>`);
         latestRuleId++;
     });
 
@@ -166,15 +166,12 @@
         board.setLayout(board.halfandhalf());
     });
 
-
-
     async function play() {        
-        let executed;
         let previousState;
 
         if(!rules.length) {
             togglePlay();
-            makeModal();
+            makeModal(modalText.makeRules);
             return;
         }
         // 1000 seems like a biggish number ¯\_(ツ)_/¯
@@ -182,18 +179,20 @@
             if(!playing) {
                 break;
             }
+            // JSON.stringify to clone
             previousState = JSON.stringify(state);
+
             // Tries every rule until one is executed
             rules.every((rule) => {
-                [state, executed] = rule.execute(state);
-                return !executed;
+                return !rule.execute(state);
             });
+            console.log(state);
             // If the previous state is the same it will not move
             // with the same set of rules. End the game
             if(previousState === JSON.stringify(state)) {
                 togglePlay();
                 if(i == 0) {
-                    stuckModal();
+                    makeModal(modalText.stuck);
                 }
                 break;
             }

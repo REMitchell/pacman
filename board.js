@@ -1,8 +1,9 @@
 class Board {
-    constructor(width, height, mode) {
+    constructor(width, height, mode, state) {
         this.mode = mode;
         this.width = width;
         this.height = height;
+        this.state = state;
     }
 
     setup() {
@@ -103,7 +104,6 @@ class Board {
                 }
             }
         }
-        debugger;
         return layout;
     }
 
