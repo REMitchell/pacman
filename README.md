@@ -9,9 +9,10 @@ Or, navigate to <a href="http://haltornot.com">the internet page where this proj
 
 ## How it Works
 
-Set your PAC-MAN wherever you want, click on it to change direction. Modify the cells to set up your board (or use the preset buttons for inspiration).
+Set your PAC-MAN wherever you want, click on it to change direction. <br>Modify the cells to set up your board (or use the preset buttons for inspiration).<br>
 Create rules that decide, transform, and move. 
-The cell values (in "number" mode -- radio buttons on the right to change from dots) range from 0 to 9. Walls can be thought of as "-1" although they can't be moved into, so they're kind of a special case.
+<br>The cell values (in "number" mode -- radio buttons in the control panel to change from dots) range from 0 to 9.
+<br>Walls can be thought of as "-1" although they can't be moved into, so they're kind of a special case.
 
 ### index.html
 Contains all HTML for board and control layout, as well as event handlers for user actions, and the main "play" function. There's some setup at top as well (More of this could probably be moved to board.js)
