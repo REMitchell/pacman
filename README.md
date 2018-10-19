@@ -34,6 +34,9 @@ Also contains some utility functions for setup and updating scores. Could probab
 ### utils.js
 Basic utility functions, like "get element from coordinate," "get coordinates from element," as well as functions for moving PAC-MAN, updating board values, making the modals, etc.
 
+### tingle
+Just the third party <a href="https://robinparisi.github.io/tingle/">modal library</a>. I didn't want to get actual "installation" steps involved in this, so I threw it in the repo for convenience.
+
 ## Ideas for improvement
 ### Detecting infinite loops
 Right now, the program detects when the PAC-MAN is "stuck" (state does not change even though the rules have been executed, or no rules are executed in a pass) but does not detect infinite loops.
