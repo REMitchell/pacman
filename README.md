@@ -60,4 +60,3 @@ I've been focusing on writing this for so long, I haven't really gotten a chance
 - PAC-MAN is always guaranteed to either get "stuck" or go into an infinite loop. Why is this the case? Could you design a system (maybe some imaginary system) in which this would not be the case?
 - What if the possible values in the cells were unbounded, instead of being limited to 1-9? Could you use this to trigger different "states" for your ruleset? Does this mean that it's equivalent to a Turing Machine?
 - What defines the set of boards where PAC-MAN is capable of crossing all the cells and ones where some cells are unreachable? How can you tell? What kinds of constraints do the rule formats and cell values place on us?
-
